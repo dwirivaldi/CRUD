@@ -5,6 +5,7 @@ import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import Form from "react-bootstrap/Form";
+import { numberWithCommas } from "../src/utils";
 
 function App() {
   const [data, setData] = useState([]);
@@ -112,7 +113,7 @@ function App() {
                 <td>{item.name}</td>
                 <td>{item.description}</td>
                 <td>{item.image}</td>
-                <td>{item.price}</td>
+                <td>Rp. {numberWithCommas(item.price)}</td>
                 <td>
                   <ButtonGroup aria-label="Action">
                     <Button variant="primary">Edit</Button>
