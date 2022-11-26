@@ -1,24 +1,54 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import { useEffect, useState } from "react";
+import Axios from "axios";
+import Table from "react-bootstrap/Table";
+import Button from "react-bootstrap/Button";
+import ButtonGroup from "react-bootstrap/ButtonGroup";
 
 function App() {
+  const [data, setData] = useState([]);
+  useEffect(() => {
+    Axios({
+      method: "get",
+      url: "http://localhost:7777/product",
+    }).then(function (response) {
+      console.log(response);
+      setData(response.data.data);
+    });
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Table striped bordered hover variant="dark">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Name</th>
+          <th>Description</th>
+          <th>Image</th>
+          <th>Price</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {data.map((item, index) => {
+          return (
+            <tr key={index}>
+              <td>{index + 1}</td>
+              <td>{item.name}</td>
+              <td>{item.description}</td>
+              <td>{item.image}</td>
+              <td>{item.price}</td>
+              <td>
+                <ButtonGroup aria-label="Action">
+                  <Button variant="primary">Edit</Button>
+                  <Button variant="danger">Delete</Button>
+                </ButtonGroup>
+              </td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </Table>
   );
 }
 
