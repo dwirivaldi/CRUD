@@ -6,6 +6,7 @@ import Button from "react-bootstrap/Button";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import Form from "react-bootstrap/Form";
 import { numberWithCommas } from "../src/utils";
+import Modal from "react-bootstrap/Modal";
 
 function App() {
   const [data, setData] = useState([]);
@@ -13,6 +14,15 @@ function App() {
   const [description, setDescription] = useState("");
   const [image, setImage] = useState("");
   const [price, setPrice] = useState(0);
+
+  const [nameEdit, setNameEdit] = useState("");
+  const [descriptionEdit, setDescriptionEdit] = useState("");
+  const [imageEdit, setImageEdit] = useState("");
+  const [priceEdit, setPriceEdit] = useState(0);
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = (id) => setShow(id);
 
   const getData = () => {
     Axios({
@@ -43,13 +53,34 @@ function App() {
     });
   };
 
-  const handleDelete = (id) => {
+  const handleEdit = () => {
     Axios({
-      method: "post",
-      url: `http://localhost:7777/product/delete/${id}`,
+      method: "put",
+      url: `http://localhost:7777/product/${show}`,
+      data: {
+        name: nameEdit,
+        description: descriptionEdit,
+        image: imageEdit,
+        price: parseInt(priceEdit),
+      },
     }).then(function (response) {
+      handleClose();
+      setNameEdit("");
+      setDescriptionEdit("");
+      setImageEdit("");
+      setPriceEdit(0);
       getData();
     });
+  };
+
+  const handleDelete = (id) => {
+    if (window.confirm(`Delete ID ${id}?`))
+      Axios({
+        method: "post",
+        url: `http://localhost:7777/product/delete/${id}`,
+      }).then(function (response) {
+        getData();
+      });
   };
 
   useEffect(() => {
@@ -125,7 +156,12 @@ function App() {
                 <td>Rp. {numberWithCommas(item.price)}</td>
                 <td>
                   <ButtonGroup aria-label="Action">
-                    <Button variant="primary">Edit</Button>
+                    <Button
+                      variant="primary"
+                      onClick={() => handleShow(item.id)}
+                    >
+                      Edit
+                    </Button>
                     <Button
                       variant="danger"
                       onClick={() => handleDelete(item.id)}
@@ -139,6 +175,59 @@ function App() {
           })}
         </tbody>
       </Table>
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Edit Product</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group className="mb-3" controlId="formBasicName">
+              <Form.Label>Name</Form.Label>
+              <Form.Control
+                value={nameEdit}
+                type="text"
+                onChange={(e) => setNameEdit(e.target.value)}
+                placeholder="Enter name"
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formBasicDescription">
+              <Form.Label>Description</Form.Label>
+              <Form.Control
+                value={descriptionEdit}
+                type="text"
+                onChange={(e) => setDescriptionEdit(e.target.value)}
+                placeholder="Enter Description"
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formBasicImage">
+              <Form.Label>Image</Form.Label>
+              <Form.Control
+                value={imageEdit}
+                type="text"
+                onChange={(e) => setImageEdit(e.target.value)}
+                placeholder="Enter Image"
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formBasicPrice">
+              <Form.Label>Price</Form.Label>
+              <Form.Control
+                value={priceEdit}
+                type="number"
+                onChange={(e) => setPriceEdit(e.target.value)}
+                placeholder="Enter price"
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleEdit}>
+            Save Changes
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 }
