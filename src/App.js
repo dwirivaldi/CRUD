@@ -43,6 +43,15 @@ function App() {
     });
   };
 
+  const handleDelete = (id) => {
+    Axios({
+      method: "post",
+      url: `http://localhost:7777/product/delete/${id}`,
+    }).then(function (response) {
+      getData();
+    });
+  };
+
   useEffect(() => {
     getData();
   }, []);
@@ -117,7 +126,12 @@ function App() {
                 <td>
                   <ButtonGroup aria-label="Action">
                     <Button variant="primary">Edit</Button>
-                    <Button variant="danger">Delete</Button>
+                    <Button
+                      variant="danger"
+                      onClick={() => handleDelete(item.id)}
+                    >
+                      Delete
+                    </Button>
                   </ButtonGroup>
                 </td>
               </tr>
